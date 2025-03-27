@@ -1,73 +1,117 @@
-# Descripción del Proyecto: Predicción y Exploración de Precios de Automóviles con Streamlit
+# **Predicción de Precios de Vehículos Usados Utilizando Aprendizaje Automático**
 
-## Introducción
+## **Introducción**
 
-Este proyecto tiene como objetivo desarrollar una **aplicación interactiva web** utilizando **Streamlit** que permite a los usuarios predecir el precio de un automóvil basado en ciertas características o explorar las tendencias de los precios de los automóviles a través de varias categorías. El proyecto utiliza modelos de machine learning para predecir los precios de los automóviles y visualizaciones para ayudar a los usuarios a comprender cómo las diferentes características afectan los precios de los automóviles. Implica la carga de datos, limpieza, entrenamiento de un modelo y la implementación de una interfaz interactiva tanto para la predicción como para la exploración.
+El objetivo de este proyecto es predecir el precio de vehículos usados basándose en varias características como el año del modelo, la marca, el estado, el tipo de combustible, el kilometraje, el tipo de transmisión y la categoría del vehículo. Se aplican técnicas de **Random Forest**, **Gradient Boosting** y **XGBoost** para desarrollar modelos predictivos. Utilizamos **GridSearchCV** para optimizar los hiperparámetros de estos modelos y evaluamos su rendimiento utilizando el **Error Cuadrático Medio Raíz (RMSE)**.
 
-La aplicación consta de dos secciones principales:
-1. **Predicción de precios de automóviles**: Los usuarios ingresan diversas características de su automóvil para predecir su precio.
-2. **Exploración de precios de automóviles**: Los usuarios exploran las relaciones entre los precios de los automóviles y características como el modelo, tipo, sistema de combustible, tipo de transmisión y si el automóvil es 4WD.
+Este proyecto incluye varias etapas, desde el **Análisis Exploratorio de Datos (EDA)** hasta la **entrenamiento y optimización de modelos**, con el enfoque en lograr el mejor modelo para predecir los precios de los vehículos.
 
-## Procedimientos
+## **Análisis Exploratorio de Datos (EDA)**
 
-### 1. **Recopilación y Limpieza de Datos**
-   - El conjunto de datos utilizado en este proyecto proviene de un archivo CSV (`vehicles_us.csv`) que contiene información detallada sobre varios automóviles, incluyendo características como precio, modelo, año, condición, kilometraje, tipo de combustible y tipo de transmisión.
-   - Los datos se preprocesan para manejar los valores faltantes. Específicamente:
-     - Los valores faltantes en ciertas columnas (como `is_4wd`, `model_year` y `odometer`) se completan utilizando diversos métodos, incluidos las tablas dinámicas y la mediana de características relacionadas.
-     - Los valores no numéricos se codifican en valores numéricos mediante **Codificación de Etiquetas** para las variables categóricas (como modelo, condición, tipo de combustible, etc.).
-     - Algunos valores se modifican para garantizar la consistencia (por ejemplo, los nombres de los modelos de automóviles se estandarizan).
-     - Las transformaciones de datos incluyen la categorización de las columnas `price`, `odometer` y `model_year` en diferentes niveles para facilitar la agrupación.
+El Análisis Exploratorio de Datos (EDA) es un paso crucial para comprender la estructura y las relaciones dentro del conjunto de datos. A través de EDA, obtenemos información sobre la distribución de las características, su relación con la variable objetivo (`precio`) y los posibles problemas de datos que deben ser abordados.
 
-### 2. **Entrenamiento del Modelo y Predicción**
-   - Se entrena un modelo de regresión para predecir el precio de un automóvil en función de sus características (como modelo, año, kilometraje, tipo de combustible, condición, etc.).
-   - Se utiliza **Codificación de Etiquetas** para convertir los datos categóricos (como los nombres de los modelos, la condición, el tipo de combustible) en valores numéricos que puedan ser alimentados en el modelo de machine learning.
-   - El modelo entrenado se guarda mediante **pickle**, lo que permite cargarlo más tarde para realizar predicciones sin necesidad de volver a entrenarlo.
+### **1. Visión General de los Datos**
 
-### 3. **Creación de la Interfaz Streamlit**
-   - Se utiliza el marco de trabajo **Streamlit** para crear una interfaz web donde los usuarios pueden interactuar con el modelo.
-     - La interfaz tiene dos opciones principales:
-       - **Página de Predicción**: Los usuarios ingresan las características de su automóvil, y el modelo predice su precio.
-       - **Página de Exploración**: Los usuarios pueden explorar la relación entre los precios de los automóviles y características como modelo, tipo de combustible, tipo de transmisión y si el automóvil es 4WD.
-   - Los usuarios pueden seleccionar características del automóvil mediante menús desplegables y deslizadores. Una vez que se ingresan los datos, la predicción del precio se realiza utilizando el modelo previamente entrenado.
-   - Los resultados se muestran dinámicamente, permitiendo a los usuarios ajustar los valores de entrada y ver inmediatamente el precio estimado actualizado.
+El conjunto de datos consta de varias características relacionadas con los atributos de los vehículos, que incluyen:
 
-### 4. **Exploración de Datos**
-   - Para la sección **Explorar**, el proyecto utiliza `pandas` para agrupar los datos por diferentes categorías y calcular el precio promedio para cada categoría.
-   - Se crean visualizaciones utilizando **matplotlib** y las funciones de gráficos integradas de **Streamlit**. Estas visualizaciones ayudan a los usuarios a comprender cómo diferentes características, como el modelo de automóvil, el tipo de vehículo y si el vehículo es 4WD, influyen en los precios de los automóviles.
+- **model_year**: Año del modelo del vehículo.
+- **model**: Marca o modelo del vehículo.
+- **condition**: Variable categórica que indica el estado del vehículo (por ejemplo, excelente, bueno, regular).
+- **fuel**: Tipo de combustible utilizado por el vehículo (por ejemplo, gasolina, diésel).
+- **odometer**: Kilometraje o distancia recorrida por el vehículo.
+- **transmission**: Tipo de transmisión (manual o automática).
+- **type**: Tipo de vehículo (por ejemplo, SUV, sedán, camión).
 
-### 5. **Interacción con el Usuario y Flujo de Trabajo**
-   - Los usuarios comienzan eligiendo entre las secciones **Predecir** o **Explorar** desde una barra lateral de selección.
-   - En la **Página de Predicción**, seleccionan características del automóvil como modelo, condición, tipo de combustible, tipo de transmisión, kilometraje y año. Al hacer clic en el botón **"Calcular el precio de tu automóvil"**, la aplicación utiliza el modelo previamente entrenado para predecir el precio del automóvil.
-   - En la **Página de Exploración**, los usuarios pueden ver gráficos de barras que muestran cómo los precios promedio de los automóviles varían según diferentes características como el modelo del automóvil, el tipo de vehículo y si el vehículo es 4WD.
+La variable objetivo es **price**, que es el precio que deseamos predecir a partir de estas características.
 
-## Hallazgos
+### **2. Limpieza y Preparación de los Datos**
 
-### 1. **Preprocesamiento y Limpieza de Datos**
-   - La limpieza de datos fue esencial para manejar los valores faltantes y garantizar la precisión del modelo. Las columnas con valores faltantes se manejaron completándolos con los valores medianos o utilizando tablas dinámicas.
-   - La codificación de etiquetas se aplicó con éxito para convertir los datos no numéricos en formato numérico, lo que permitió que el modelo de machine learning pudiera procesarlos.
+Antes de comenzar cualquier análisis, primero aseguramos que el conjunto de datos esté limpio y listo para el análisis:
 
-### 2. **Desempeño del Modelo**
-   - El modelo de regresión proporcionó una estimación razonable de los precios de los automóviles basándose en las características de entrada, aunque podría mejorarse con más ajustes y técnicas avanzadas.
-   - La precisión del modelo depende de la calidad de las características de entrada. Características como el año del modelo, el kilometraje y la condición tuvieron un impacto significativo en el precio predicho, mientras que características menos relevantes (como el color de la pintura) tuvieron un impacto mínimo en el resultado del modelo.
+- **Manejo de Valores Faltantes**: Verificamos si hay valores faltantes en el conjunto de datos y aplicamos métodos adecuados para llenarlos o eliminarlos.
+- **Eliminación de Duplicados**: Inspeccionamos y eliminamos registros duplicados que puedan afectar el análisis.
+- **Detección de Valores Atípicos**: Los valores atípicos se visualizan utilizando diagramas de caja, particularmente para características como `odometer` y `model_year`.
+- **Verificación de Tipos de Datos**: Confirmamos que las variables categóricas estén correctamente codificadas y que las variables numéricas sean tratadas como numéricas.
 
-### 3. **Información de la Exploración**
-   - La **Página de Exploración** permitió a los usuarios obtener información sobre cómo diferentes características afectan los precios de los automóviles. Por ejemplo:
-     - **Modelos de automóviles** como Toyota y Honda generalmente tuvieron precios promedio más altos que los modelos menos populares.
-     - **El tipo de vehículo** también jugó un papel importante en la determinación del precio, con SUVs y camiones tendiendo a tener precios más altos que sedanes o hatchbacks.
-     - El **tipo de transmisión** influyó en el precio, siendo las transmisiones automáticas generalmente más caras que las manuales.
-     - Los **vehículos 4WD** típicamente tuvieron precios más altos en comparación con los vehículos 2WD.
+### **3. Estadísticas Resumidas**
 
-### 4. **Interactividad**
-   - Las características interactivas de Streamlit permitieron a los usuarios probar rápidamente diferentes combinaciones de entradas y ver cómo cambiaba el precio. Este nivel de interactividad mejora el compromiso del usuario y proporciona una experiencia fácil de usar.
+Calculamos estadísticas descriptivas para cada característica para entender su distribución:
 
-## Conclusión
+- **Tendencia Central**: Se calculan la media, mediana y moda para características numéricas como `odometer` y `price`.
+- **Dispersión**: Se evalúan la desviación estándar y el rango para ver cuán dispersos están los valores.
+- **Correlación**: Se calcula una matriz de correlación para explorar las relaciones entre las características y la variable objetivo (`price`).
 
-Este proyecto desarrolló con éxito un **sistema de predicción de precios de automóviles** utilizando **Streamlit**. El sistema permite a los usuarios predecir el precio de un automóvil basado en diversas características como el modelo, la condición, el tipo de combustible y el kilometraje. También proporciona una herramienta valiosa para explorar cómo los precios de los automóviles varían según diferentes características. Al preprocesar los datos de manera efectiva y aplicar técnicas de machine learning, el sistema proporciona predicciones precisas y conocimientos valiosos.
+### **4. Análisis Univariante**
 
-### Recomendaciones para Trabajos Futuros:
-1. **Mejora del Modelo**: El modelo de regresión actual puede mejorarse experimentando con diferentes algoritmos (por ejemplo, árboles de decisión, bosques aleatorios o gradient boosting) para aumentar la precisión de la predicción.
-2. **Características Adicionales**: Incluir más características, como la ubicación y detalles del vendedor, podría mejorar la capacidad predictiva del modelo.
-3. **Mejoras en la Experiencia del Usuario**: Añadir más visualizaciones en la **Página de Exploración** podría proporcionar a los usuarios información más profunda sobre las tendencias de los precios de los automóviles.
-4. **Integración de Datos en Tiempo Real**: Incorporar datos en tiempo real de los mercados de automóviles ayudaría a proporcionar predicciones y tendencias actualizadas.
+Realizamos un análisis univariante para comprender la distribución de las características individuales:
 
-En general, este proyecto ofrece una herramienta integral tanto para predecir los precios de los automóviles como para explorar los factores que los influyen, proporcionando un valor significativo a los posibles compradores y vendedores de automóviles.
+- **Características Numéricas**: Examinamos la distribución de `price`, `odometer` y `model_year` mediante histogramas y gráficos de densidad.
+- **Características Categóricas**: Para características como `condition`, `fuel` y `transmission`, utilizamos diagramas de barras para visualizar la frecuencia de cada categoría.
+
+### **5. Análisis Bivariante**
+
+Analizamos las relaciones entre las características individuales y la variable objetivo:
+
+- **Características Numéricas**: Usamos diagramas de dispersión para explorar cómo características como `odometer` y `model_year` se relacionan con `price`.
+- **Características Categóricas**: Se utilizan diagramas de caja para visualizar cómo las características categóricas como `condition`, `fuel` y `transmission` afectan la distribución del precio.
+
+### **6. Importancia de las Características**
+
+Para comprender qué características son más influyentes en la predicción del precio, utilizamos **Random Forest** para calcular la importancia de las características. Se espera que características como `odometer`, `condition` y `model_year` sean los predictores más significativos del precio.
+
+### **7. Visualización de Relaciones**
+
+Las visualizaciones son clave para descubrir patrones en los datos:
+
+- **Distribución de Características Numéricas**: Se utilizan histogramas y diagramas de caja para entender la distribución de características como `price`, `odometer` y `model_year`.
+- **Mapa de Calor de Correlación**: Un mapa de calor de la matriz de correlación ayuda a identificar relaciones entre características numéricas y la variable objetivo.
+- **Frecuencia de Categorías**: Los diagramas de barras visualizan la frecuencia de características categóricas como `condition`, `fuel` y `transmission`.
+- **Precio vs. Características**: Diagramas de dispersión y diagramas de caja se utilizan para mostrar la relación entre `price` y otras características como `odometer`, `model_year` y `condition`.
+
+### **8. Ideas Derivadas del EDA**
+
+A partir del EDA, obtenemos varias ideas que guían los siguientes pasos en el proceso de modelado:
+
+- **Distribución del Precio**: La característica `price` tiene una distribución sesgada a la derecha, lo que indica que los vehículos con precios bajos son más comunes.
+- **Estado y Precio**: Los vehículos en excelente estado tienen precios significativamente más altos que los de estado bueno o regular.
+- **Año del Modelo y Precio**: Los vehículos de modelos más nuevos tienden a tener precios más altos, aunque hay excepciones para ciertas marcas o modelos.
+- **Kilometraje y Precio**: Un mayor kilometraje generalmente se correlaciona con precios más bajos, pero algunos vehículos retienen su valor a pesar del alto kilometraje.
+
+## **Entrenamiento y Optimización del Modelo**
+
+Una vez completado el EDA y preparada la data, procedemos con la selección y optimización del modelo. Utilizamos varios modelos de aprendizaje automático para predecir los precios de los vehículos, incluyendo **Random Forest**, **Gradient Boosting** y **XGBoost**. El objetivo es identificar el modelo con mejor rendimiento a través de la optimización de hiperparámetros y validación cruzada.
+
+### **1. Random Forest Regressor**
+
+Entrenamos el modelo **Random Forest Regressor** para predecir el precio de los vehículos. Utilizamos **GridSearchCV** para ajustar los hiperparámetros, como `max_depth`, `n_estimators` y `min_samples_split`. El modelo se entrena y calculamos el **Error Cuadrático Medio Raíz (RMSE)** para evaluar su rendimiento.
+
+### **2. Gradient Boosting Regressor**
+
+De manera similar, entrenamos el **Gradient Boosting Regressor** utilizando los mejores hiperparámetros obtenidos mediante **GridSearchCV**. Evaluamos el rendimiento utilizando RMSE y comparamos los resultados con el modelo de Random Forest.
+
+### **3. XGBoost Regressor**
+
+El **XGBoost Regressor** también se entrena y sus hiperparámetros se optimizan mediante **GridSearchCV**. Se calcula el RMSE y comparamos el rendimiento con los otros modelos.
+
+### **4. Evaluación del Modelo**
+
+La selección final del modelo se basa en el rendimiento de RMSE. Entre los tres modelos probados, **Random Forest Regressor** alcanzó el mejor rendimiento con un RMSE de **$1,591.18**. Los otros modelos, **Gradient Boosting** y **XGBoost**, tuvieron un rendimiento ligeramente inferior, con RMSE de **$1,969.30** y **$3,580.22**, respectivamente.
+
+## **Despliegue del Modelo: Predicción y Guardado del Modelo**
+
+Una vez identificado el mejor modelo, lo desplegamos para realizar predicciones con nuevos datos. Preparamos un conjunto de datos de prueba con características de vehículos (por ejemplo, año del modelo, estado, tipo de combustible), transformamos las variables categóricas utilizando los **LabelEncoders** entrenados y predecimos el precio utilizando el **Random Forest Regressor**.
+
+Además, el modelo entrenado y los codificadores se guardan utilizando **Pickle** para su uso posterior, asegurando que el modelo pueda ser cargado y utilizado para futuras predicciones sin necesidad de reentrenarlo.
+
+## **Tecnologías Utilizadas**
+
+- **Python**: Lenguaje de programación utilizado para el análisis de datos y la construcción de modelos.
+- **Pandas**: Biblioteca para la manipulación y análisis de datos.
+- **NumPy**: Utilizado para operaciones matemáticas y manipulación de matrices.
+- **Scikit-learn**: Herramienta principal para la creación y evaluación de modelos de machine learning (incluyendo RandomForestRegressor, GradientBoostingRegressor, y XGBRegressor).
+- **Matplotlib** y **Seaborn**: Bibliotecas para visualización de datos.
+- **Pickle**: Utilizado para guardar y cargar los modelos entrenados y los codificadores.
+
+## **Conclusión**
+
+Este proyecto ha demostrado cómo aplicar técnicas de aprendizaje automático para predecir el precio de vehículos usados. A través del uso de **Random Forest**, **Gradient Boosting**, y **XGBoost**, hemos identificado que **Random Forest** es el modelo más adecuado para esta tarea, logrando el mejor rendimiento con un RMSE de **$1,591.18**.
